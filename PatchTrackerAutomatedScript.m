@@ -496,7 +496,7 @@ for i = 1:length(directoryList(:,1))
                 does_this_file_need_making(sprintf('%s%s.collapseTracks.mat',localpath, FilePrefix), Prefs.track_analysis_date) == 1 ) )
             disp('28')
             
-            fprintf('processing %s%s.avi',localpath, FilePrefix)
+            fprintf('processing %s%s.avi\n',localpath, FilePrefix)
             actually_processed_flag=1;
             tic
             
@@ -541,7 +541,10 @@ for i = 1:length(directoryList(:,1))
             % Child process; remove it
             fp = fopen(working_file,'w'); fclose(fp);
 %             command = sprintf('
-            Tracker(localpath,FilePrefix,stimulusIntervalFile,'','numworms',target_numworms, 'framerate', Prefs.FrameRate);
+            disp('\nLaunching patchTracker\n')
+%             Tracker(localpath,FilePrefix,stimulusIntervalFile,'','numworms',target_numworms, 'framerate', Prefs.FrameRate);
+            patchTracker(localpath,FilePrefix,stimulusIntervalFile,target_numworms,Prefs.FrameRate);
+            disp('\nFinished patchTracker\n')
 %             ', localpath, FilePrefix, stimulusIntervalFile, target_numworms, Prefs.FrameRate);
 %             launch_matlab_command(command);
             rm(working_file);
@@ -571,12 +574,13 @@ for i = 1:length(directoryList(:,1))
     end
     % Analyse all the Tracks, combine the independent experiments in this
     % directory
-    
-    mean_time_per_run=150;
-    if(~isempty(elapsed_time))
-        disp('35')
-        mean_time_per_run = mean(elapsed_time);
-    end
+
+%     The variable mean_time_per_run only used in block 39
+%     mean_time_per_run=150;
+%     if(~isempty(elapsed_time))
+%         disp('35')
+%         mean_time_per_run = mean(elapsed_time);
+%     end
     
     analyse_flag=0;%analyse_flag=1;
     j=1;
@@ -598,33 +602,36 @@ for i = 1:length(directoryList(:,1))
         if(file_existence(testfile)==0)  % this BinData file does not exist ... someone else is working on it, so let that process do the averaging
             analyse_flag=0;
             disp('38')
-            if(trackmasterflag==1)  % but this process is a master, so wait for the jobs to finish
-                disp('39')
-                j=0;
-%                 analyse_flag=1;
-                stopflag=0;
-                tic;
-                while(stopflag==0)
-                    et = toc;
-                    fprintf('Will wait %f sec for %s%s.avi to finish\t%s',2*mean_time_per_run-et, localpath, FilePrefix,timeString())
-                    if(et > 2*mean_time_per_run)
-                        disp('40')
-                        fprintf('something wrong with processing %s%s.avi ... this computer will retry it\t%s',localpath, FilePrefix,timeString())
-                        rm(working_file);
-                        command = sprintf('Tracker(''%s'',''%s'',''%s'', '''',''numworms'',%d, ''framerate'', %d)', PathName, FilePrefix, stimulusIntervalFile,target_numworms, Prefs.FrameRate);
-                        fprintf('processing %s%s.avi',localpath, FilePrefix)
-                        launch_matlab_command(command);
-                        actually_processed_flag=1;
-                        stopflag=1;
-                    end
-                    if(file_existence(testfile)==1)
-                        disp('41')
-                        stopflag=1;
-                    else
-                        pause(10);
-                    end
-                end
-            else
+            
+%             The below not used by PatchTrackerAutomatedScript_trimmed2_0905test
+%             if(trackmasterflag==1)  % but this process is a master, so wait for the jobs to finish
+%                 disp('39')
+%                 j=0;
+% %                 analyse_flag=1;
+%                 stopflag=0;
+%                 tic;
+%                 while(stopflag==0)
+%                     et = toc;
+%                     fprintf('Will wait %f sec for %s%s.avi to finish\t%s',2*mean_time_per_run-et, localpath, FilePrefix,timeString())
+%                     if(et > 2*mean_time_per_run)
+%                         disp('40')
+%                         fprintf('something wrong with processing %s%s.avi ... this computer will retry it\t%s',localpath, FilePrefix,timeString())
+%                         rm(working_file);
+%                         command = sprintf('Tracker(''%s'',''%s'',''%s'', '''',''numworms'',%d, ''framerate'', %d)', PathName, FilePrefix, stimulusIntervalFile,target_numworms, Prefs.FrameRate);
+%                         fprintf('processing %s%s.avi',localpath, FilePrefix)
+%                         launch_matlab_command(command);
+%                         actually_processed_flag=1;
+%                         stopflag=1;
+%                     end
+%                     if(file_existence(testfile)==1)
+%                         disp('41')
+%                         stopflag=1;
+%                     else
+%                         pause(10);
+%                     end
+%                 end
+%             else
+
                 if(file_existence(working_file))
                     disp('42')
                     fprintf('%s exists ... another CPU should complete and average this directory',working_file)
@@ -632,7 +639,7 @@ for i = 1:length(directoryList(:,1))
                     disp('43')
                     fprintf('Neither %s nor %s exists ... consider re-running PatchTrackerAutomatedScript for directory %s',testfile, working_file, localpath)
                 end
-            end
+%             end
         end
         j=j+1;
     end

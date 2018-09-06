@@ -1,6 +1,8 @@
-function rawTracks = patchTracker(PathName, FilePrefix, stimulusfile, Ringtype, varargin)
-% PatchTrackerAutomatedScript calls this as follows:
-%    patchTracker(localpath, FilePrefix, stimulusIntervalFile, '', 'numworms', target_numworms, 'framerate', Prefs.FrameRate)
+function rawTracks = patchTracker(PathName, FilePrefix, stimulusfile, target_numworms, fps)
+
+%%% changed Tracker call in PatchTrackerAutomatedScript to:
+%%%     patchTracker(localpath,FilePrefix,stimulusIntervalFile,target_numworms,Prefs.FrameRate);
+%%% to get rid of parsing issue
 
 global Prefs;
 Prefs = define_preferences(Prefs);
@@ -38,11 +40,11 @@ endFrame = [];
 %         i=i+1;
 %     else if(strcmpi(varargin{i},'numworms')==1)
 %             i=i+1;
-            target_numworms = varargin{2}; % the index of target_numworms is always 2 for patch calls
+%             target_numworms = varargin{1}; % the index of target_numworms is always 1 for patch calls
 %             i=i+1;
 %         else if(strcmpi(varargin{i},'framerate')==1)
 %                 i=i+1;
-                Prefs.FrameRate = varargin{4}; % the index of Prefs.FrameRate is always 4 for patch calls
+                Prefs.FrameRate = fps; % the index of Prefs.FrameRate is always 2 for patch calls
                 Prefs = CalcPixelSizeDependencies(Prefs, Prefs.DefaultPixelSize);
 %                 i=i+1;
 %             end
@@ -58,41 +60,44 @@ rawTracks = [];
 % Get AVI movie for analysis
 % --------------------------
 
-if(nargin == 0) % running in interactive mode... no arguments given.... ask the user for the MovieName
-    cd(pwd);
-    [FileName, PathName] = uigetfile('*.avi', 'Select AVI Movie For Analysis');
-    if FileName == 0
-        errordlg('No movie was selected for analysis');
-        Prefs = OPrefs;
-        return;
-    end
-    
-%     [pathstr, FilePrefix, ext] = fileparts(FileName); % same unnecessary bullshit as in trackerautomatedscript
-    [~, FilePrefix, ~] = fileparts(FileName);
-    
-    localpath = sprintf('%s%s',PathName, filesep);
-    
-    Prefs.PlotFrameRate = Prefs.PlotFrameRateInteractive;    % 100 Display tracking on screen every PlotFrameRate frames
-    Prefs.PlotDataRate = Prefs.PlotDataRateInteractive;      % 10 print data to matlab window every PlotDataRate frames
-    
-else  % probably running from a script
+%%% Will always be running from a script; PatchTrackerAutomatedScript.m
+
+% if(nargin == 0) % running in interactive mode... no arguments given.... ask the user for the MovieName
+%     cd(pwd);
+%     [FileName, PathName] = uigetfile('*.avi', 'Select AVI Movie For Analysis');
+%     if FileName == 0
+%         errordlg('No movie was selected for analysis');
+%         Prefs = OPrefs;
+%         return;
+%     end
+%     
+% %     [pathstr, FilePrefix, ext] = fileparts(FileName); % same unnecessary variables as in trackerautomatedscript
+%     [~, FilePrefix, ~] = fileparts(FileName);
+%     
+%     localpath = sprintf('%s%s',PathName, filesep);
+%     
+%     Prefs.PlotFrameRate = Prefs.PlotFrameRateInteractive;    % 100 Display tracking on screen every PlotFrameRate frames
+%     Prefs.PlotDataRate = Prefs.PlotDataRateInteractive;      % 10 print data to matlab window every PlotDataRate frames
+%     
+% else  % probably running from a script
     
     Prefs.PlotFrameRate = Prefs.PlotFrameRateBatch;
     Prefs.PlotDataRate = Prefs.PlotDataRateBatch;
-    
-    if(nargin==1) % is likely an avi file
-        
-        FileName = PathName;
-        [PathName, FilePrefix, ext] = fileparts(FileName);
-        if(strcmp(ext,'.avi')==0) % not an avi file
-            sprintf('%s is not an .avi file.\nBailing out...',FileName)
-            Prefs = OPrefs;
-            return;
-        end
-        FileName = sprintf('%s.avi',FilePrefix);
-    else
+
+%     nargin would have always been above 1 in original call
+%     if(nargin==1) % is likely an avi file
+%         
+%         FileName = PathName;
+%         [PathName, FilePrefix, ext] = fileparts(FileName);
+%         if(strcmp(ext,'.avi')==0) % not an avi file
+%             sprintf('%s is not an .avi file.\nBailing out...',FileName)
+%             Prefs = OPrefs;
+%             return;
+%         end
+%         FileName = sprintf('%s.avi',FilePrefix);
+%     else
         FileName = sprintf('%s.avi', FilePrefix);
-    end
+%     end
     
     if(strcmp(PathName,'')==0)
         localpath = PathName;
@@ -127,7 +132,7 @@ else  % probably running from a script
             analyse_rawTracks(rawTracks, stimulusfile, localpath, FilePrefix);
             
             if(nargout>0)
-                load(rawtracksfilename);
+                load(rawtracksfilename); %#ok no path conflict
             end
             
             Prefs = OPrefs;
@@ -137,7 +142,7 @@ else  % probably running from a script
             rm(rawtracksfilename);
         end
     end
-end
+% end
 
 % remove any processed files for this movie, in case they exist
 fprintf('Removing old processed files for %s%s.avi\t%s',localpath,FilePrefix, timeString())
@@ -174,6 +179,7 @@ if(does_this_file_need_making(procFrame_file))
     
     NumFrames = endFrame-startFrame+1;
     
+%   Last print statement before child process spawning
     fprintf('Now defining the global background and boundry\t%s',timeString())
     global_background = calculate_background(MovieName);
     Ring = find_ring(global_background,localpath, FilePrefix);
@@ -224,8 +230,8 @@ if(does_this_file_need_making(procFrame_file))
         frameEnd_vector = [];
         f=startFrame;
         while(f<endFrame)
-            startFrame_vector = [startFrame_vector f];
-            frameEnd_vector = [frameEnd_vector startFrame_vector(end)+frameStep-1];
+            startFrame_vector = [startFrame_vector f]; %#ok, negligible speed difference
+            frameEnd_vector = [frameEnd_vector startFrame_vector(end)+frameStep-1]; %#ok, negligible speed difference
             f = f + frameStep;
         end
         if(frameEnd_vector  > endFrame)
@@ -238,39 +244,43 @@ if(does_this_file_need_making(procFrame_file))
             frameEnd_vector(end) = endFrame;
         end
             
-        for(kk=1:length(startFrame_vector))
+        for kk=1:length(startFrame_vector)
             dummystring = sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk));
             if(file_existence(dummystring)==0)
-                fork_process_movie_frames(MovieName, localpath, FilePrefix, stimulusfile, startFrame_vector(kk), frameEnd_vector(kk), target_numworms);
-                pause(10);    
+%               Call to fork_process_movie_frames is the child process culprit!  
+                patch_process_movie_frames(MovieName, localpath, FilePrefix, stimulusfile, startFrame_vector(kk), frameEnd_vector(kk), target_numworms);
+                pause(10);
             end
         end
+        
+%       Below loop irrelevant now since no child processes spawn
         % wait for all to finish
-        done_flag=0;
-        cycle = 0;
-        while(done_flag==0)
-            cycle = cycle + 1;
-            done_flag = 1;
-            kk=1;
-            num_finished = 0;
-            not_done = [];
-            for(kk=1:length(startFrame_vector))
-                dummystring = sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk));
-                if(file_existence(dummystring)==0)
-                    done_flag = 0;
-                    not_done = [not_done kk];
-                else
-                    num_finished = num_finished + 1;
-                end
-            end
-            pause(10);
-            if(mod(cycle,10)==0)
-                fprintf('%d/%d child processes finished\t%s',num_finished, length(startFrame_vector), timeString)
-                if(length(not_done) == 1)
-                    printf('\tWaiting for %d to %d \t%s',  startFrame_vector(not_done(1)), frameEnd_vector(not_done(1)), timeString)
-                end
-            end
-        end
+%         done_flag=0;
+%         cycle = 0;
+%         while(done_flag==0)
+%             cycle = cycle + 1;
+%             done_flag = 1;
+% %             kk=1; % kk doesn't appear to be used in this block
+%             num_finished = 0;
+%             not_done = [];
+%             for kk=1:length(startFrame_vector)
+%                 dummystring = sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk));
+%                 if(file_existence(dummystring)==0)
+%                     done_flag = 0;
+%                     not_done = [not_done kk]; %#ok, too involved to make unconditional loop
+%                 else
+%                     num_finished = num_finished + 1;
+%                 end
+%             end
+%             pause(10);
+%             if(mod(cycle,10)==0)
+%                 fprintf('%d/%d child processes finished\t%s',num_finished, length(startFrame_vector), timeString)
+%                 if(length(not_done) == 1)
+%                     printf('\tWaiting for %d to %d \t%s',  startFrame_vector(not_done(1)), frameEnd_vector(not_done(1)), timeString)
+%                 end
+%             end
+%         end
+
         % pool procFrame segments into single procFrame file
         fprintf('pooling procFrame segments into single procFrame file\t%s',timeString)
 
@@ -278,10 +288,10 @@ if(does_this_file_need_making(procFrame_file))
         for kk=1:length(startFrame_vector)
             pause(30);
             try
-                load(sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk)));
+                load(sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk))); %#ok
             catch
                 pause(240);
-                load(sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk)));
+                load(sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame_vector(kk), frameEnd_vector(kk))); %#ok
             end
             if(isfield(procFrame(1),'scalars'))%decompress procFrames if necessary
                 procFrame = compress_decompress_procFrame(procFrame);
@@ -338,7 +348,7 @@ end
 
 if(isempty(Ring))
     ringfile = sprintf('%s%s.Ring.mat',localpath, FilePrefix);
-    load(ringfile);
+    load(ringfile); %#ok
     if(isfield(Ring,'arena_name'))
         multi_arena_split_procFrame(procFrame, Ring, stimulusfile, localpath, FilePrefix);
         
@@ -365,18 +375,19 @@ clear('dummystring');
 
 
 % Save rawTracks
-if(nargin == 0)  % interactive
-    FileName = sprintf('%s.rawTracks.mat',FilePrefix);
-    [FileName,localpath] = uiputfile(FileName, 'Save Track Data');
-    if FileName ~= 0
-        save_Tracks([localpath, FileName], rawTracks);
-    end
-else % command-line or batch
+%%% nargin == 4 for all old calls from PatchTrackerAutomatedScript
+% if(nargin == 0)  % interactive
+%     FileName = sprintf('%s.rawTracks.mat',FilePrefix);
+%     [FileName,localpath] = uiputfile(FileName, 'Save Track Data');
+%     if FileName ~= 0
+%         save_Tracks([localpath, FileName], rawTracks);
+%     end
+% else % command-line or batch
     FileName = sprintf('%s.rawTracks.mat',FilePrefix);
     dummystring = sprintf('%s%s',localpath,FileName);
     save_Tracks(dummystring, rawTracks);
     fprintf('%s saved %s\n', dummystring, timeString())
-end
+% end
 
 % analyse and save analysed Tracks
 analyse_rawTracks(rawTracks, stimulusfile, localpath, FilePrefix);

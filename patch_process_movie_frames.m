@@ -21,11 +21,11 @@ load(RingFile); %#ok
 Prefs=[];
 Prefs = define_preferences(Prefs);
 Prefs.FrameRate = Ring.FrameRate;
-Prefs.PID = Prefs.PID;
-Prefs.aggressive_wormfind_flag = Prefs.aggressive_wormfind_flag;
-Prefs.timerbox_flag = Prefs.timerbox_flag;
+% Prefs.PID = Prefs.PID;
+% Prefs.aggressive_wormfind_flag = Prefs.aggressive_wormfind_flag;
+% Prefs.timerbox_flag = Prefs.timerbox_flag;
 Prefs = CalcPixelSizeDependencies(Prefs, Ring.PixelSize);
-Prefs.no_collisions_flag = Prefs.no_collisions_flag;
+% Prefs.no_collisions_flag = Prefs.no_collisions_flag;
 
 master_process_movie_frames(MovieName, localpath, FilePrefix, Ring, stimulusfile, startFrame, endFrame, target_numworms);
 
