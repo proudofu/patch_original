@@ -7,9 +7,16 @@ function PatchTrackerAutomatedScript(directoryListFilename, varargin)
 rehash path; % refreshes the m-files after they have been edited repeatedly during the existence of a single MATLAB instance.
 curr_dir = pwd; % char array of the path
 
+disp('1')
+pwd
+
 global Prefs; % makes a global variable called Prefs; not a built-in MATLAB function
 Prefs = [];
 Prefs = define_preferences(Prefs);
+
+disp('2')
+pwd
+
 Prefs.Ringtype = 'noRingHereThanks';
 aviread_to_gray;
 stimulusIntervalFile = '';
@@ -22,6 +29,10 @@ quick = 1;
 pixelsize_MovieName = varargin{3};
 target_numworms = varargin{5};
 scaleRing = get_pixelsize_from_arbitrary_object(pixelsize_MovieName);
+
+disp('3')
+pwd
+
 Prefs.DefaultPixelSize = scaleRing.PixelSize;
 Prefs.PixelSize = scaleRing.PixelSize;
 Prefs = CalcPixelSizeDependencies(Prefs, Prefs.DefaultPixelSize);
