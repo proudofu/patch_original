@@ -190,8 +190,7 @@ fprintf('Calculating background and rings for all the movies in folder %s\n', cu
 %             end
 
             dummystring = sprintf('%s%s*.avi',PathName,filesep);
-            movieList = dir(dummystring);
-            
+	    movieList = dir(dummystring); 
             for j=1:length(movieList)
                 disp('3')
 %                 [pathstr, FilePrefix, ext] = fileparts(movieList(j).name); % pathstr and ext never used in this loop

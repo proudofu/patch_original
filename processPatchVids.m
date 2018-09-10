@@ -10,7 +10,7 @@ function processPatchVids(date) % date is a char array in format YYYYMMDD corres
 % default parameters: range of worms expected on the plate and size of plate
 numworms = [10 100];
 
-cd (char(date))
+cd (sprintf('/om/user/kmaher/data/patch_videos/%s', date))
 folders = dir; %avi should be in own folder named date_genotype_vid#_Cam#
 vids = cell(1, length(folders) - 2); % preallocating space
 
@@ -19,12 +19,14 @@ for i=3:length(folders)
     vids(i-2) = {folders(i).name};
     cam = char(vids(i-2));
     cam = cam((length(cam)-3):end);
-    measure = strcat('..\measure', cam, '.avi');
+    measure = strcat('/om/user/kmaher/data/patch_videos/measure', cam, '.avi');
     try
         PatchTrackerAutomatedScript(vids{i-2}, 'quick', 'scale', char(measure), 'numworms', numworms, 'none'); %FOR SMALL PLATES
     catch error
         fprintf('\nThe following file failed PatchTrackerAutomatedScript: %s\n', vids{i-2});
         fprintf('The error: %s\n', error.message)
+        fprintf('The function: %s\n', error.stack(1).name)
+        fprintf('The line number: %d\n', error.stack(1).line)
     end
 end
 
@@ -35,6 +37,8 @@ for i=1:length(vids)
     catch error
         fprintf('\nThe following file failed processPatchTracks: %s\n', vids{i});
         fprintf('The error: %s\n', error.message)
+        fprintf('The function: %s\n', error.stack(1).name)
+        fprintf('The line number: %d\n', error.stack(1).line)
     end
 end
 cd ..
