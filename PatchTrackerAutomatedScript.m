@@ -11,7 +11,7 @@ global Prefs; % makes a global variable called Prefs; not a built-in MATLAB func
 Prefs = [];
 Prefs = define_preferences(Prefs);
 Prefs.Ringtype = 'noRingHereThanks';
-aviread_to_gray;
+patch_aviread_to_gray;
 stimulusIntervalFile = '';
 trackonly_flag = 0;
 trackmasterflag = 0;
@@ -686,7 +686,7 @@ for i = 1:length(directoryList(:,1))
 end
 
 % remove copy of movie from tempdir
-aviread_to_gray('rm_temp');
+patch_aviread_to_gray('rm_temp');
 
 clear('Prefs');
 

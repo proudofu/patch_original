@@ -7,7 +7,7 @@ function rawTracks = patchTracker(PathName, FilePrefix, stimulusfile, target_num
 global Prefs;
 Prefs = define_preferences(Prefs);
 
-aviread_to_gray;
+patch_aviread_to_gray;
 
 FileInfo = [];
 Ring = [];
@@ -396,7 +396,7 @@ if(nargout==0)
 end
 
 % remove copy of movie from tempdir
-aviread_to_gray('rm_temp');
+patch_aviread_to_gray('rm_temp');
 
 % clear any child m-files in temp
 rm(sprintf('%schild_command_script_%d*.m', tempdir,Prefs.PID));
