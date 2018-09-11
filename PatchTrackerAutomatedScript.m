@@ -7,16 +7,9 @@ function PatchTrackerAutomatedScript(directoryListFilename, varargin)
 rehash path; % refreshes the m-files after they have been edited repeatedly during the existence of a single MATLAB instance.
 curr_dir = pwd; % char array of the path
 
-disp('1')
-pwd
-
 global Prefs; % makes a global variable called Prefs; not a built-in MATLAB function
 Prefs = [];
-Prefs = define_preferences(Prefs);
-
-disp('2')
-pwd
-
+Prefs = patch_define_preferences(Prefs);
 Prefs.Ringtype = 'noRingHereThanks';
 patch_aviread_to_gray;
 stimulusIntervalFile = '';
@@ -29,10 +22,6 @@ quick = 1;
 pixelsize_MovieName = varargin{3};
 target_numworms = varargin{5};
 scaleRing = get_pixelsize_from_arbitrary_object(pixelsize_MovieName);
-
-disp('3')
-pwd
-
 Prefs.DefaultPixelSize = scaleRing.PixelSize;
 Prefs.PixelSize = scaleRing.PixelSize;
 Prefs = CalcPixelSizeDependencies(Prefs, Prefs.DefaultPixelSize);
@@ -173,7 +162,7 @@ directoryList = char(dummystringCellArray{1});
 animal_find_dud_idx = [];
 
 curr_path = split(curr_dir, filesep); 
-fprintf('Calculating background and rings for all the movies in folder %s\n', curr_path{end})
+fprintf('\nCalculating background and rings for all the movies in folder %s\n', curr_path{end})
 %disp('Some might need manual intervention later, so please do not leave yet!') % Wanna delete this message
 
 % parallel processing for ring and animal finding
@@ -217,7 +206,7 @@ fprintf('Calculating background and rings for all the movies in folder %s\n', cu
                         disp('5')
                         fp = fopen(working_file,'w'); fclose(fp);
 %                         fprintf('%s%s%s.avi\t%s',PathName, filesep, FilePrefix, timeString())
-                        fprintf('Beginning\t%s\n', timeString())
+                        fprintf('\nBeginning\t%s\n', timeString())
                         moviefile = sprintf('%s%s%s.avi',PathName, filesep, FilePrefix);
                         
 %                         command = sprintf('cd %s; global Prefs; Prefs = []; load %s;', pwd, prefsfile);
@@ -325,7 +314,7 @@ for i = 1:length(directoryList(:,1))
 end
 
 % now allow manual intervention for those files that failed
-disp('Manually pick rings, if needed')
+%disp('Manually pick rings, if needed')
 
 for i = 1:length(directoryList(:,1))
     disp('17')
@@ -398,7 +387,7 @@ for k=1:size(animal_find_dud_idx,1)
     dummystring = sprintf('%s%s*.avi',PathName,filesep);
     movieList = dir(dummystring);
     
-    fprintf('%s:',PathName)
+    fprintf('\n%s\n:',PathName)
     
     % pathstr and ext not used
 %     [pathstr, FilePrefix, ext] = fileparts(movieList(j).name);
@@ -408,7 +397,7 @@ for k=1:size(animal_find_dud_idx,1)
     
     Ring = find_ring(background,sprintf('%s%s',PathName,filesep), FilePrefix, 1, quick);%%%
     
-    fprintf('%d %d %d %s%s%s.avi',i,j,Ring.NumWorms, PathName, filesep, FilePrefix)
+    fprintf('%d %d %d %s%s%s.avi\n',i,j,Ring.NumWorms, PathName, filesep, FilePrefix)
     
     % None of these variables even used in the rest of this loop.
 %     [DefaultLevel, NumFoundWorms, mws, Ring] = default_worm_threshold_level(sprintf('%s%s%s.avi',PathName, filesep, FilePrefix), background, [], target_numworms, Ring, 1);
@@ -506,12 +495,12 @@ for i = 1:length(directoryList(:,1))
                 does_this_file_need_making(sprintf('%s%s.collapseTracks.mat',localpath, FilePrefix), Prefs.track_analysis_date) == 1 ) )
             disp('28')
             
-            fprintf('processing %s%s.avi\n',localpath, FilePrefix)
+            fprintf('\nprocessing %s%s.avi\n',localpath, FilePrefix)
             actually_processed_flag=1;
             tic
             
             % remove any processed files for this movie, in case they exist
-            fprintf('Removing old processed files for %s%s.avi\t%s',localpath,FilePrefix, timeString())
+            fprintf('Removing old processed files for %s%s.avi\t%s\n',localpath,FilePrefix, timeString())
             dummystring = sprintf('%s%s.Tracks.mat',localpath,FilePrefix);
             rm(dummystring);
             dummystring = sprintf('%s%s.linkedTracks.mat',localpath,FilePrefix);
@@ -551,10 +540,10 @@ for i = 1:length(directoryList(:,1))
             % Child process; remove it
             fp = fopen(working_file,'w'); fclose(fp);
 %             command = sprintf('
-            disp('\nLaunching patchTracker\n')
+            fprintf('\nLaunching patchTracker\n')
 %             Tracker(localpath,FilePrefix,stimulusIntervalFile,'','numworms',target_numworms, 'framerate', Prefs.FrameRate);
             patchTracker(localpath,FilePrefix,stimulusIntervalFile,target_numworms,Prefs.FrameRate);
-            disp('\nFinished patchTracker\n')
+            fprintf('\nFinished patchTracker\n')
 %             ', localpath, FilePrefix, stimulusIntervalFile, target_numworms, Prefs.FrameRate);
 %             launch_matlab_command(command);
             rm(working_file);
@@ -566,17 +555,17 @@ for i = 1:length(directoryList(:,1))
             disp('31')
             if(file_existence(working_file) == 1)
                 disp('32')
-                fprintf('%s%s.avi is being worked on',localpath, FilePrefix)
+                fprintf('\n%s%s.avi is being worked on\n',localpath, FilePrefix)
             else if(does_this_file_need_making(sprintf('%s%s.rawTracks.mat',localpath, FilePrefix), Prefs.trackerbirthday) == 0) %#ok, readability warning
                     disp('33')
-                    fprintf('%s%s.avi has been processed',localpath, FilePrefix)
+                    fprintf('%s%s.avi has been processed\n',localpath, FilePrefix)
                 end
             end
         end
         
         if(file_existence(sprintf('%s%sstop.txt',pwd,filesep)))
             disp('34')
-            fprintf('stop due to %s%sstop.txt',pwd,filesep)
+            fprintf('\nstop due to %s%sstop.txt\n',pwd,filesep)
             cd(curr_dir);
             return;
         end
@@ -599,7 +588,7 @@ for i = 1:length(directoryList(:,1))
         
         if(file_existence(sprintf('%s%sstop.txt',pwd,filesep)))
             disp('37')
-            fprintf('stop due to %s%sstop.txt',pwd,filesep)
+            fprintf('\nstop due to %s%sstop.txt\n',pwd,filesep)
             cd(curr_dir);
             return;
         end
@@ -644,10 +633,10 @@ for i = 1:length(directoryList(:,1))
 
                 if(file_existence(working_file))
                     disp('42')
-                    fprintf('%s exists ... another CPU should complete and average this directory',working_file)
+                    fprintf('%s exists ... another CPU should complete and average this directory\n',working_file)
                 else
                     disp('43')
-                    fprintf('Neither %s nor %s exists ... consider re-running PatchTrackerAutomatedScript for directory %s',testfile, working_file, localpath)
+                    fprintf('\nNeither %s nor %s exists ... consider re-running PatchTrackerAutomatedScript for directory %s\n',testfile, working_file, localpath)
                 end
 %             end
         end
@@ -657,7 +646,7 @@ for i = 1:length(directoryList(:,1))
     
     if(file_existence(sprintf('%s%sstop.txt',pwd,filesep)))
         disp('44')
-        fprintf('stop due to %s%sstop.txt',pwd,filesep)
+        fprintf('\nstop due to %s%sstop.txt\n',pwd,filesep)
         cd(curr_dir);
         return;
     end

@@ -5,7 +5,7 @@ function rawTracks = patchTracker(PathName, FilePrefix, stimulusfile, target_num
 %%% to get rid of parsing issue
 
 global Prefs;
-Prefs = define_preferences(Prefs);
+Prefs = patch_define_preferences(Prefs);
 
 patch_aviread_to_gray;
 
