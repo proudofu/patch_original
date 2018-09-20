@@ -1,4 +1,4 @@
-function preSplit_local(date)
+function preSplit(date)
     %strain, color
     colors = {'m' 'c' 'r' 'g' 'b' 'k'};
     
