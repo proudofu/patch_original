@@ -217,7 +217,7 @@ fprintf('\nCalculating background and rings for all the movies in folder %s\n', 
 %                             launch_matlab_command(command,1);
 %                             num_cpus = num_cpus - 1;
 %                         else
-                            calc_background_ring_worm_count(PathName, moviefile, scaleRing);
+                            patch_calc_background_ring_worm_count(PathName, moviefile, scaleRing);
 %                         end
                     end
                 else

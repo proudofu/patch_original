@@ -10,9 +10,10 @@ function finalTracks = processPatchTracks (folder) % Folder should have all file
 PathofFolder = sprintf('%s',folder);
 PathName = sprintf('%s/%s/',PathofFolder);
 
-fileList = ls(PathofFolder);
+% fileList = ls(PathofFolder);
+fileList = string(split(ls(PathofFolder)));
        
-numFiles = length(fileList(:,1));
+numFiles = length(fileList);
 
 indexHere = 1;
 for j=3:1:numFiles
@@ -40,7 +41,7 @@ for j=3:1:numFiles
 end
 
 %get info on Tracks, then delete
-
+who
 trackHeight = Tracks(1).Height;
 trackWidth = Tracks(1).Width;
 PixelSizeVideo = Tracks(1).PixelSize;

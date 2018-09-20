@@ -202,7 +202,7 @@ if(does_this_file_need_making(procFrame_file))
         
     procFrame = [];
     if(Prefs.NumCPU<=1 ||  NumFrames < 2*Prefs.TrackProcessChunkSize) % just do it in one process
-        procFrame = master_process_movie_frames(MovieName, localpath, FilePrefix, Ring, stimulusfile, startFrame, endFrame, target_numworms);
+        procFrame = patch_master_process_movie_frames(MovieName, localpath, FilePrefix, Ring, stimulusfile, startFrame, endFrame, target_numworms);
         dummystring = sprintf('%s%s.%d_%d.procFrame.mat',localpath, FilePrefix, startFrame, endFrame);
         mv(dummystring, procFrame_file);
         clear('dummystring');
