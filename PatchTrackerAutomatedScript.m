@@ -8,7 +8,7 @@ rehash path; % refreshes the m-files after they have been edited repeatedly duri
 curr_dir = pwd; % char array of the path
 
 global Prefs; % makes a global variable called Prefs; not a built-in MATLAB function
-Prefs = [];
+%Prefs = [];
 Prefs = define_preferences(Prefs);
 Prefs.Ringtype = 'noRingHereThanks';
 aviread_to_gray;
@@ -190,6 +190,7 @@ fprintf('Calculating background and rings for all the movies in folder %s\n', cu
 %             end
 
             dummystring = sprintf('%s%s*.avi',PathName,filesep);
+            fprintf('dummystring:\t%s', dummystring)
             movieList = dir(dummystring);
             
             for j=1:length(movieList)
@@ -212,13 +213,13 @@ fprintf('Calculating background and rings for all the movies in folder %s\n', cu
                         
 %                         command = sprintf('cd %s; global Prefs; Prefs = []; load %s;', pwd, prefsfile);
 %                         command = sprintf('%s scaleRing = find_ring(''%s'');', command, pixelsize_MovieName);
-%                         command = sprintf('%s calc_background_ring_worm_count(''%s'', ''%s'', scaleRing, %i);', command, PathName, moviefile, quick);
+%                         command = sprintf('%s patch_calc_background_ring_worm_count(''%s'', ''%s'', scaleRing, %i);', command, PathName, moviefile, quick);
                         
 %                         if(num_cpus>1)
 %                             launch_matlab_command(command,1);
 %                             num_cpus = num_cpus - 1;
 %                         else
-                            calc_background_ring_worm_count(PathName, moviefile, scaleRing);
+                            patch_calc_background_ring_worm_count(PathName, moviefile, scaleRing);
 %                         end
                     end
                 else
