@@ -24,7 +24,7 @@ for i=3:length(folders)
         PatchTrackerAutomatedScript(vids{i-2}, 'quick', 'scale', char(measure), 'numworms', numworms, 'none'); %FOR SMALL PLATES
     catch error
         fprintf('\nThe following file failed PatchTrackerAutomatedScript: %s\n', vids{i-2});
-        fprintf('The error: %s\n', error.message)
+        fprintf('The stack: \n%s', getReport(error))
     end
 end
 
@@ -34,7 +34,7 @@ for i=1:length(vids)
         processPatchTracks(char(vids(i)));
     catch error
         fprintf('\nThe following file failed processPatchTracks: %s\n', vids{i});
-        fprintf('The error: %s\n', error.message)
+        fprintf('The stack: \n%s', getReport(error))
     end
 end
 cd ..

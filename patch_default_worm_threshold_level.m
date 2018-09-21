@@ -215,8 +215,7 @@ if( ((manual_flag==1) && ((NumFoundWorms_initial < Prefs.DefaultNumWormRange(1))
     end
     
 %   Set objects2 equal to the result if we were to manually add no worms when the GUI pops up
-%     objects2 = add_delete_worms_with_mouse(Mov.cdata, objects, local_numWorms_vector); % Mov.cdata
-    objects2 = [objects, 0];
+    objects2 = patch_add_delete_worms_with_mouse(Mov.cdata, objects, local_numWorms_vector); % Mov.cdata
     added_worms = (length(objects2) -  length(objects));
     target_numworms = NumWorms + added_worms;
     close(gcf);
