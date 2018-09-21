@@ -214,8 +214,8 @@ if( ((manual_flag==1) && ((NumFoundWorms_initial < Prefs.DefaultNumWormRange(1))
         local_numWorms_vector(i) = max(1, round(objects(i).Area/meanWormSize(1)));
     end
    
-    % Changed to return the same "objects" variable and 0 added worms, just like what would happen if the GUI opened up and we manually added zero worms. 9/13/2018 -KM 
-    objects2 = [objects, 0]; % add_delete_worms_with_mouse(Mov.cdata, objects, local_numWorms_vector); % Mov.cdata
+    % patch_add_delete... is an empty function that just returns the arguments as if no worms were added during GUI input 9/13/2018 -KM 
+    objects2 = patch_add_delete_worms_with_mouse(Mov.cdata, objects, local_numWorms_vector); % Mov.cdata
     added_worms = (length(objects2) -  length(objects));
     target_numworms = NumWorms + added_worms;
     close(gcf);
