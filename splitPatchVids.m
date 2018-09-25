@@ -39,7 +39,8 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
 
         for s = 1:numFields
             vidName = makeVidName(nameParts, strains{s}); % parses multi-strain file names by underscores to make new file name for each strain
-            writers(s) = openVidWriter(vidName, v.FrameRate); % makes an array of VideoWriter objects for each strain on this camera's file
+            writers(s) = openVidWriter(vidName, v.FrameRate); %#ok makes an array of VideoWriter objects for each strain on this camera's file
+            % consider finding a way to preallocate space for object array
         end    
 
         % Writing new cropped videos to disk.
@@ -74,7 +75,7 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     cd ..
     
     % Close parpool
-    delete(p);
+%     delete(p);
 end
 
     function vidName = makeVidName(nameParts, strain)
