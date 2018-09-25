@@ -1,0 +1,17 @@
+#!/bin/bash
+# Argument $1 is the date the data was recorded in YYYYMMDD format
+# Argument $2 is the openmind7 username (same as Kerberos username) for the files to be copied to
+
+# 1. Copy over video files
+scp -r /mnt/g/behavior/$1 $2@openmind7.mit.edu:/om/user/kmaher/data/patch_videos
+
+# 2. Select fields locally
+matlab.exe -r "addpath(genpath('C:/Users/kamal/Documents/MATLAB/Patch')), preSplit('$1'), quit"
+
+# 3. Transfer field files to cluster
+
+cd /mnt/g/behavior/$1
+FILES=*
+for file in $FILES ; do
+    scp $file/vid?_Cam?_fields.mat $2@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1/$file
+done

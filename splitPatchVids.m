@@ -11,12 +11,15 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     vids = {};
     
     % Get a handle to the cluster
-    c = parcluster('openmind');
-    
+    %c = parcluster('openmind');
+    %c.AdditionaProperties.WallTime = '05:00:00';
+    %c.saveProfile
+
     % Open a pool of workers
-    p = c.parpool(length(folders) - 2); % Number of workers = number of loops = number of videos in the folder that need splitting
+    %p = c.parpool(length(folders) - 2); % Number of workers = number of loops = number of videos in the folder that need splitting
     
-    parfor i= 3:length(folders)
+    %parfor i= 3:length(folders)
+    for i= 3:length(folders)
         vids(i-2) = {folders(i).name}; %#ok, Suppressing warning that vids may not be used after parfor loop. This is intentional.
         cd(vids{i-2});
         vid = dir('*.avi');
@@ -31,8 +34,8 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         end
 
         % import fields for this camera from the date folder
-        fields = load(sprintf('%s_fields.mat', nameParts{end}));
-        
+        load(sprintf('%s_%s_fields.mat', nameParts{end-1}, nameParts{end}))
+
         writers = zeros(numFields); % preallocating space to make compatible with parfor loop
         for s = 1:numFields
             vidName = makeVidName(nameParts, strains{s}); % parses multi-strain file names by underscores to make new file name for each strain
