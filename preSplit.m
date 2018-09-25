@@ -34,7 +34,7 @@ function preSplit(date)
             fields(s).y = y; % top right corner of relevant region
             c = c + 1; % increment color index for unique colors for each strain
         end
-        save (sprintf('%s_%s_fields.mat', nameParts{end-1}, nameParts{end}), fields); % name each fields struct based on the camera the video was recorded on
+        save (sprintf('%s_%s_fields.mat', nameParts{end-1}, nameParts{end}), 'fields'); % name each fields struct based on the camera the video was recorded on
         cd ..
     end
 end
