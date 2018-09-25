@@ -5,7 +5,7 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     warning('off', 'MATLAB:colon:nonIntegerIndex') % Known non-integer indeces in function writeVids
 
     % Find num videos in folder
-    cd (sprintf('/om/user/kmaher/data/patch_videos/%s',date))
+    cd (sprintf('G:/behavior/%s',date))
     mkdir(sprintf('%s_unsplit', date));
     folders = dir; %avi should be in own folder named date_refeeding_numFields_genotype1_genotype2_genotype3_vid#_Cam#
     vids = {};
@@ -34,9 +34,9 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         end
 
         % import fields for this camera from the date folder
-        load(sprintf('%s_%s_fields.mat', nameParts{end-1}, nameParts{end}))
+        fields = load(sprintf('%s_%s_fields.mat', nameParts{end-1}, nameParts{end}));
+        fields = fields.fields; % just hacking the variables so that the rest of the script can be preserved
 
-        writers = zeros(numFields); % preallocating space to make compatible with parfor loop
         for s = 1:numFields
             vidName = makeVidName(nameParts, strains{s}); % parses multi-strain file names by underscores to make new file name for each strain
             writers(s) = openVidWriter(vidName, v.FrameRate); % makes an array of VideoWriter objects for each strain on this camera's file
