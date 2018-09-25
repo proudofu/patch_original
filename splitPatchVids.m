@@ -5,8 +5,9 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     warning('off', 'MATLAB:colon:nonIntegerIndex') % Known non-integer indeces in function writeVids
 
     % Find num videos in folder
-    cd (sprintf('G:/behavior/%s',date))
+    cd ('/om/user/kmaher/data/patch_videos')
     mkdir(sprintf('%s_unsplit', date));
+    cd (sprintf('/om/user/kmaher/data/patch_videos/%s',date))
     folders = dir; %avi should be in own folder named date_refeeding_numFields_genotype1_genotype2_genotype3_vid#_Cam#
     vids = {};
     
@@ -23,7 +24,6 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         vids(i-2) = {folders(i).name}; %#ok, Suppressing warning that vids may not be used after parfor loop. This is intentional.
         cd(vids{i-2});
         vid = dir('*.avi');
-        disp('line before video reader call')
         v = VideoReader(vid.name); %#ok, Can't move this out of the loop, don't rly care ab 'better performance' here
         vidFrame = readFrame(v);
         nameParts = split(vids{i-2}, '_'); % parse
