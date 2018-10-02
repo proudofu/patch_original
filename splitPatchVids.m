@@ -28,7 +28,7 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         vidFrame = readFrame(v);
         nameParts = split(vids{i-2}, '_'); % parse
         numFields = str2double(nameParts{3});
-        strains = strings(numFields); % preallocating space to make compatible w parfor loop
+        %strains = strings(numFields); % preallocating space to make compatible w parfor loop
         for s = 1:numFields
             strains(s) = nameParts(3+s);
         end
@@ -46,7 +46,7 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         % Writing new cropped videos to disk.
         % This part seems to take the bulk of the run time, as the output is often in excess of 7000 sec = ~2 hrs
         tic
-        fprintf('\nWriting new .avi files for %s and %s', strains{1}, strains{2});
+        fprintf('\nWriting new .avi files for %s and %s\t%s', strains{1}, strains{2}, nameParts{end-1});
         fprintf('\nProgress: ');
         writeVids(writers, fields, vidFrame);
         frame_counter = 1;
@@ -55,13 +55,8 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
             vidFrame = readFrame(v); % get next uncropped frame
             writeVids(writers, fields, vidFrame); % take this frame, crop it for each strain, and write it to respective strains' new .avi files
             % the below print statements are to display the number of frames written in real time
-            if frame_counter > 1
-                for j=1:length(sprintf('%d/%d frames', frame_counter, total_frames))
-                    fprintf('\b'); % delete previous counter display
-                end
-            end
             frame_counter = frame_counter + 1;
-            fprintf('%d/%d frames', frame_counter, total_frames);
+            fprintf('%d/%d frames\n', frame_counter, total_frames);
         end
         fprintf('\n')
         
