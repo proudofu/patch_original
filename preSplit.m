@@ -6,7 +6,7 @@ function preSplit(date)
     warning('off', 'images:initSize:adjustingMag') % Anticipate image resizing during user region selection
     
     % Establish same relevant variables as in main splitPatchVids
-    cd('G:\behavior') % important to match this up to the letter for the hard drive connected that contains the videos
+    cd('E:\flp-23 Patch Assays') % important to match this up to the letter for the hard drive connected that contains the videos
     cd (char(date))
     folders = dir; %avi should be in own folder named date_refeeding_numFields_genotype1_genotype2_genotype3_vid#_Cam#
     vids = {};  % Array of all .avi file names (one for each cam)
