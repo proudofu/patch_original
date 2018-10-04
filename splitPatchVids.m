@@ -46,17 +46,11 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         % Writing new cropped videos to disk.
         % This part seems to take the bulk of the run time, as the output is often in excess of 7000 sec = ~2 hrs
         tic
-        fprintf('\nWriting new .avi files for %s and %s\t%s', strains{1}, strains{2}, nameParts{end-1});
-        fprintf('\nProgress: ');
+        fprintf('\nWriting new .avi files for %s and %s %s', strains{1}, strains{2}, nameParts{end-1});
         writeVids(writers, fields, vidFrame);
-        frame_counter = 1;
-        total_frames = round(v.Duration*v.FrameRate);
         while hasFrame(v) % while v, a VideoReader object for the uncropped vid, still has frames in it (while video is not over)
             vidFrame = readFrame(v); % get next uncropped frame
             writeVids(writers, fields, vidFrame); % take this frame, crop it for each strain, and write it to respective strains' new .avi files
-            % the below print statements are to display the number of frames written in real time
-            frame_counter = frame_counter + 1;
-            fprintf('%d/%d frames\n', frame_counter, total_frames);
         end
         fprintf('\n')
         

@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=splitPatchVids
+#SBATCH --job-name=processPatchVids
 #SBATCH --output=/om/user/kmaher/log/processPatchVids_%j.txt
 #SBATCH -N 1
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=30000
 #SBATCH --time=96:00:00
 
-# Argument $1 should be the name (YYYYMMDD) of the folder containing the unsplit video.
+# Argument $1 should be the name (YYYYMMDD) of the folder containing the split videos.
 
 module load mit/matlab/2018a
 matlab -nodisplay -singleCompThread -r "addpath(genpath('/om/user/kmaher/scripts/matlab')), processPatchVids('$1')"
