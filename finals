@@ -1,20 +1,20 @@
 #!/bin/bash
 # Download finalTracks files for a given date onto a local machine from cluster.
 # Argument $1 is the date of recording in YYYYMMDD format
-
 # Rename folders on local machine to make room for split folders from cluster
-mv /mnt/g/behavior/$1 /mnt/g/behavior/$1_unsplit
-
 # Copy to local machine all files from that date on cluster except for .avi files
-rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior
-
+echo "Transfer files for $1 (y/n)?"
+read transfer
+if [ $transfer == "y" ]; then
+	mv /mnt/g/behavior/$1 /mnt/g/behavior/$1_unsplit
+	rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior
+fi
 # Launch MATLAB and run getAllCleanFinalRefeedTracks
 echo "Get final tracks? (y/n)"
 read run1
 if [ $run1 == "y" ]; then
 	matlab -r "cd('G:/behavior/$1'), getAllCleanFinalRefeedTracks(true)"
 fi
-
 # Launch MATLAB and 
 echo "Check encounters? (y/n)"
 read run2
