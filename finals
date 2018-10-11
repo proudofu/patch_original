@@ -6,18 +6,18 @@
 echo "Transfer files for $1 (y/n)?"
 read transfer
 if [ $transfer == "y" ]; then
-	mv /mnt/g/behavior/$1 /mnt/g/behavior/$1_unsplit
-	rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior
+        mv /mnt/g/behavior/$1 /mnt/g/behavior/$1_unsplit
+        rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior/$1
 fi
 # Launch MATLAB and run getAllCleanFinalRefeedTracks
 echo "Get final tracks? (y/n)"
 read run1
 if [ $run1 == "y" ]; then
-	matlab -r "cd('G:/behavior/$1'), getAllCleanFinalRefeedTracks(true)"
+        matlab.exe -r "cd('G:/behavior/$1'), getAllCleanFinalRefeedTracks(true)"
 fi
-# Launch MATLAB and 
+# Launch MATLAB and
 echo "Check encounters? (y/n)"
 read run2
 if [ $run2 == "y" ]; then
-	matlab -r "load('uncheckedTracks_$1_1.mat'), checkAllEncounters_v3(tracks_$1)"
+        matlab.exe -r "load('uncheckedTracks_$1_1.mat'), checkAllEncounters_v3(tracks_$1)"
 fi
