@@ -1,0 +1,63 @@
+#!/bin/bash
+# Checks which videos on a given date have finalTracks files
+
+# Argument $1 is the date folder in YYYYMMDD format
+
+echo
+echo
+echo
+echo "Present finalTracks files:"
+
+for video in /om/user/kmaher/data/patch_videos/$1/*; do
+	if [ -e $video/*finalTracks* ]; then
+		echo ${video#/om/user/kmaher/data/patch_videos/$1/}
+	fi
+done
+
+echo
+echo
+echo "Missing finalTracks files:"
+
+missing=0
+for video in /om/user/kmaher/data/patch_videos/$1/*; do
+	if [ ! -e $video/*finalTracks* ]; then
+		echo ${video#/om/user/kmaher/data/patch_videos/$1/}
+		missing=1
+	fi
+done
+if [ $missing -eq 0 ]; then
+	exit # if no missing finalTracks files, stop the script
+fi
+echo
+echo
+
+echo "View contents of folders with missing finalTracks files? (y/n)"
+read proceed
+echo
+echo
+
+if [ $proceed == "y" ]; then
+for video in /om/user/kmaher/data/patch_videos/$1/*; do
+        if [ ! -e $video/*finalTracks* ]; then
+                echo ${video#/om/user/kmaher/data/patch_videos/$1/}:
+		echo
+		ls $video
+		echo
+		echo
+        fi
+done
+fi
+echo
+
+echo "Reprocess folders with missing finalTracks files? (y/n)"
+read repro
+echo
+if [ $repro == "y" ]; then
+	for video in /om/user/kmaher/data/patch_videos/$1/*; do
+		if [ -e $video/*.working ]; then
+			echo "Removed ${video#/om/user/kmaher/data/patch_videos/$1/}.working"
+			rm $video/*.working
+		fi
+	done
+sbatch /om/user/kmaher/scripts/matlab/Patch/processPatchVids $1
+fi

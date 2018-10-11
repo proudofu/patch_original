@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Deletes .working files and relaunches processPatchVids shell script
+# Argument $1 is the date to be reprocessed
+
+for video in /om/user/kmaher/data/patch_videos/$1/*; do
+	if [ -e $video/*.working ]; then
+		rm $video/*.working
+	fi
+done
+
+sbatch processPatchVids $1
