@@ -6,7 +6,7 @@
 mv /mnt/g/behavior/$1 /mnt/g/behavior/$1_unsplit
 
 # Copy to local machine all files from that date on cluster except for .avi files
-rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior/
+rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior
 
 # Launch MATLAB and run getAllCleanFinalRefeedTracks
 echo "Get final tracks? (y/n)"
