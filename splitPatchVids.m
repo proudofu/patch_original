@@ -5,38 +5,30 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     warning('off', 'MATLAB:colon:nonIntegerIndex') % Known non-integer indeces in function writeVids
 
     % Find num videos in folder
-    cd (sprintf('/om/user/kmaher/data/patch_videos/%s',date))
+    cd (sprintf('G:/behavior/%s',date))
     mkdir(sprintf('%s_unsplit', date));
     folders = dir; %avi should be in own folder named date_refeeding_numFields_genotype1_genotype2_genotype3_vid#_Cam#
     vids = {};
     
-    % Get a handle to the cluster
-    c = parcluster('openmind');
-    
-    % Open a pool of workers
-    p = c.parpool(length(folders) - 2); % Number of workers = number of loops = number of videos in the folder that need splitting
-    
-    parfor i= 3:length(folders)
+    for i= 3:length(folders)
         vids(i-2) = {folders(i).name}; %#ok, Suppressing warning that vids may not be used after parfor loop. This is intentional.
         cd(vids{i-2});
         vid = dir('*.avi');
-        disp('line before video reader call')
         v = VideoReader(vid.name); %#ok, Can't move this out of the loop, don't rly care ab 'better performance' here
         vidFrame = readFrame(v);
         nameParts = split(vids{i-2}, '_'); % parse
         numFields = str2double(nameParts{3});
-        strains = strings(numFields); % preallocating space to make compatible w parfor loop
         for s = 1:numFields
-            strains(s) = nameParts(3+s);
+            strains(s) = nameParts(3+s); %#ok
         end
 
         % import fields for this camera from the date folder
-        fields = load(sprintf('%s_fields.mat', nameParts{end}));
+        fields = load(sprintf('%s_%s_fields.mat', nameParts{end-1}, nameParts{end}));
+        fields = fields.fields;
         
-        writers = zeros(numFields); % preallocating space to make compatible with parfor loop
         for s = 1:numFields
             vidName = makeVidName(nameParts, strains{s}); % parses multi-strain file names by underscores to make new file name for each strain
-            writers(s) = openVidWriter(vidName, v.FrameRate); % makes an array of VideoWriter objects for each strain on this camera's file
+            writers(s) = openVidWriter(vidName, v.FrameRate); %#ok makes an array of VideoWriter objects for each strain on this camera's file
         end    
 
         % Writing new cropped videos to disk.
@@ -70,11 +62,9 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     end
     cd ..
     
-    % Close parpool
-    delete(p);
 end
 
-    function vidName = makeVidName(nameParts, strain)
+function vidName = makeVidName(nameParts, strain)
     i = 97;
     vidName = sprintf('%s_%s_%s_%s%c_%s', nameParts{1}, nameParts{2}, strain, nameParts{end-1}, i, nameParts{end});
     while isfolder(sprintf('..//%s', vidName))
