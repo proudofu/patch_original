@@ -5,8 +5,9 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
     warning('off', 'MATLAB:colon:nonIntegerIndex') % Known non-integer indeces in function writeVids
 
     % Find num videos in folder
-    cd (sprintf('G:/behavior/%s',date))
+    cd('G:/behavior')
     mkdir(sprintf('%s_unsplit', date));
+    cd (sprintf('G:/behavior/%s',date))
     folders = dir; %avi should be in own folder named date_refeeding_numFields_genotype1_genotype2_genotype3_vid#_Cam#
     vids = {};
     
@@ -34,7 +35,7 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         % Writing new cropped videos to disk.
         % This part seems to take the bulk of the run time, as the output is often in excess of 7000 sec = ~2 hrs
         tic
-        fprintf('\nWriting new .avi files for %s and %s', strains{1}, strains{2});
+        fprintf('\nWriting new .avi files for %s and %s %s', strains{1}, strains{2}, nameParts{end-1});
         fprintf('\nProgress: ');
         writeVids(writers, fields, vidFrame);
         frame_counter = 1;
@@ -58,7 +59,7 @@ function splitPatchVids(date) % date is a string in the format YYYYMMDD
         fprintf('\n');
         cd ..
         %clear('v') is this necessary? Prevents script from running due to potential workspace issue within parfor.
-        movefile(vids{i-2}, sprintf('..//%s_unsplit//', date));
+        movefile(vids{i-2}, sprintf('G:/behavior/%s_unsplit/', date));
     end
     cd ..
     
