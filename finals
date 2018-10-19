@@ -7,17 +7,30 @@ echo "Transfer files for $1 (y/n)?"
 read transfer
 if [ $transfer == "y" ]; then
         mv /mnt/g/behavior/$1 /mnt/g/behavior/$1_unsplit
-        rsync -av -e ssh --exclude='*.avi' kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1 /mnt/g/behavior/$1
+        mkdir /mnt/g/behavior/$1
+	for file in kmaher@openmind7.mit.edu:/om/user/kmaher/data/patch_videos/$1/*; do
+			scp $file/*finalTracks* /mnt/g/behavior/$1
+			scp $file/*background* /mnt/g/behavior/$1
+			scp $file/*avi* /mnt/g/behavior/$1
+	done
+	for file in /mnt/g/behavior/$1/*; do
+        	d=${file#/mnt/g/behavior/$1/}
+        	d="$(echo $d | cut -f 1 -d '.')"
+        	if [ ! -e /mnt/g/behavior/$1/$d ]; then
+                	mkdir /mnt/g/behavior/$1/$d
+        	fi
+        	mv $file /mnt/g/behavior/$1/$d
+	done
 fi
 # Launch MATLAB and run getAllCleanFinalRefeedTracks
 echo "Get final tracks? (y/n)"
 read run1
 if [ $run1 == "y" ]; then
-        matlab.exe -r "cd('G:/behavior/$1'), getAllCleanFinalRefeedTracks(true)"
+        matlab.exe -r "getRefeed('$1')"
 fi
 # Launch MATLAB and
 echo "Check encounters? (y/n)"
 read run2
 if [ $run2 == "y" ]; then
-        matlab.exe -r "load('uncheckedTracks_$1_1.mat'), checkAllEncounters_v3(tracks_$1)"
+        matlab.exe -r "checkEncounters('$1')"
 fi

@@ -11,5 +11,8 @@ do
 	read PROCEED
 done
 
-# 2. Copy over folders containing video files and new fields.mat files
+# 2. Mount hard drive (assuming it was unplugged to download vids from behavior computers)
+sudo mount -t drvfs G: /mnt/g
+
+# 3. Copy over folders containing video files and new fields.mat files
 scp -r /mnt/g/behavior/$1 $2@openmind7.mit.edu:/om/user/$2/data/patch_videos
