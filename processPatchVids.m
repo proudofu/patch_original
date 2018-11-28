@@ -17,6 +17,7 @@ vids = cell(1, length(folders) - 2); % preallocating space
 % Get tracks
 for i=3:length(folders)
     vids(i-2) = {folders(i).name};
+    disp(vids(1))
     cam = char(vids(i-2));
     cam = cam((length(cam)-3):end);
     measure = strcat('/om/user/kmaher/data/patch_videos/measure', cam, '.avi');

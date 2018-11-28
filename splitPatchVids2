@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name=splitPatchVids
+#SBATCH --output=/om/user/kmaher/log/splitPatchVids_%j.txt
+#SBATCH -N 1
+#SBATCH --ntasks=8
+#SBATCH --mem-per-cpu=4000
+#SBATCH --time=40:00:00
+
+# time (hrs) = #vids x 17000 sec / 3600
+# max # vids on a date = 2 x 4 Cams = 8 vids --> time = 40 hrs
+
+# Argument $1 should be the name (YYYYMMDD) of the folder containing the unsplit video.
+
+module load mit/matlab/2018a
+matlab -r "addpath(genpath('/om/user/kmaher/scripts/matlab')), splitPatchVids2('$1')"
+

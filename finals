@@ -23,7 +23,7 @@ if [ $transfer == "y" ]; then
 	done
 fi
 # Launch MATLAB and run getAllCleanFinalRefeedTracks
-echo "Get final tracks? (y/n)"
+echo "Get refeed tracks? (y/n)"
 read run1
 if [ $run1 == "y" ]; then
         matlab.exe -r "getRefeed('$1')"

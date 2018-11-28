@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for subfolder in /om/user/kmaher/data/patch_videos/$1/*; do
+        if [[ $(basename $subfolder) == *_refeeding_2_* ]]; then
+                mv $subfolder /om/user/kmaher/data/patch_videos/$1_unsplit
+        fi
+done

@@ -1,15 +1,4 @@
 #!/bin/bash
-#BATCH --job-name=patch
-#SBATCH --output=/om/user/kmaher/log/patch_%j.txt
-#SBATCH -N 1
-#SBATCH --ntasks=1
-#SBATCH --mem-per-cpu=34000
-#SBATCH --time=168:00:00
 
-# Argument $1 should be the name (YYYYMMDD) of the folder containing the unsplit video.
-
-module load mit/matlab/2018a
-matlab -nodisplay -singleCompThread -r "addpath(genpath('/om/user/kmaher/scripts/matlab')), splitPatchVids('$1'), processPatchVids('$1')"
-
-# Consider removing /tmp/YYYYMMDD_refeeding* files within the script.
-# Will have to be careful in order to avoid erasing others' tmp files if simultaneous patch processing is occurring.
+/om/user/kmaher/scripts/matlab/Patch/split $1
+/om/user/kmaher/scripts/matlab/Patch/process $1

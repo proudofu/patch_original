@@ -1,0 +1,4 @@
+#!/bin/bash
+for subfolder in /om/user/kmaher/data/patch_videos/$1/*; do
+	sbatch subprocess $1 $(basename $subfolder)
+done

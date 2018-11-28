@@ -2,7 +2,7 @@
 % The only arguments ever passed in through processPatchVids:
 %   PatchTrackerAutomatedScript(vids{i-2}, 'quick', 'scale', char(measure), 'numworms', numworms, 'none')
 
-function PatchTrackerAutomatedScript(directoryListFilename, varargin)
+function track(directoryListFilename, varargin)
 
 rehash path; % refreshes the m-files after they have been edited repeatedly during the existence of a single MATLAB instance.
 curr_dir = pwd; % char array of the path
@@ -54,14 +54,14 @@ while(doneflag == 0)
             disp('2')
             directoryList(i,:) = filesep_convert(directoryList(i,:));
             PathName = deblank(directoryList(i,:));
-            dummystring = sprintf('%s%s*.avi',PathName,filesep);
-	    fprintf('dummystring:\t%s', dummystring);
+            dummystring = sprintf('%s.avi',PathName);
 	    movieList = dir(dummystring); 
             for j=1:length(movieList)
                 disp('3')
                 [~, FilePrefix, ~] = fileparts(movieList(j).name);
-                ringfile = sprintf('%s%s%s.Ring.mat',PathName, filesep, FilePrefix);
-                working_file = sprintf('%s%s%s.Ring.working',PathName, filesep, FilePrefix);
+                ringfile = sprintf('%s.Ring.mat',PathName);
+                working_file = sprintf('%s.Ring.working',PathName);
+ls
                 
                 if(does_this_file_need_making(ringfile))
                     doneflag = 0;
@@ -71,15 +71,16 @@ while(doneflag == 0)
                         disp('5')
                         fp = fopen(working_file,'w'); fclose(fp);
                         fprintf('\nBeginning\t%s\n', timeString())
-                        moviefile = sprintf('%s%s%s.avi',PathName, filesep, FilePrefix);
+                        moviefile = sprintf('%s.avi',PathName);
                         
-                            patch_calc_background_ring_worm_count(PathName, moviefile, scaleRing);
+                            ring(PathName, moviefile, scaleRing);
                     end
                 else
                     if(file_existence(working_file)==1 && does_this_file_need_making(ringfile) == 0)
                         disp('6')
                         clear('Ring');
                         rm(working_file);
+ls
                     end
                 end
             end
@@ -88,34 +89,34 @@ while(doneflag == 0)
     end
 
 % make background and find rings for all the movies
-class(directoryList)
 for i = 1:length(directoryList(:,1))
     disp('7')
     directoryList(i,:) = filesep_convert(directoryList(i,:));
     PathName = deblank(directoryList(i,:));
 
-    dummystring = sprintf('%s%s*.avi',PathName,filesep);
+    %dummystring = sprintf('%s%s*.avi',PathName,filesep);
+    dummystring = sprintf('%s.avi',PathName);
     movieList = dir(dummystring);
  
     for j=1:length(movieList)
         disp('8')
         [~, FilePrefix, ~] = fileparts(movieList(j).name);
         
-        ringfile = sprintf('%s%s%s.Ring.mat',PathName, filesep, FilePrefix);
+        ringfile = sprintf('%s.Ring.mat',PathName);
         if(does_this_file_need_making(ringfile))
             disp('9')
             rm(ringfile);
-            background = calculate_background(sprintf('%s%s%s.avi',PathName, filesep, FilePrefix));
+            background = calculate_background(sprintf('%s.avi',PathName));
             % first pass, no manual intervention
             
             if(isempty(scaleRing))
                 disp('10')
-                Ring = find_ring(background,sprintf('%s%s',PathName,filesep), FilePrefix, 0, quick);%%%
+                Ring = find_ring(background,sprintf('%s',PathName), '', 0, quick);%%%
             else
                 disp('11')
                 if(strcmp(Prefs.Ringtype(1:6),'square'))
                     disp('12')
-                    Ring = find_ring(background,sprintf('%s%s',PathName,filesep), FilePrefix, 1, quick);%%%
+                    Ring = find_ring(background,sprintf('%s',PathName), '', 1, quick);%%%
                 else
                     disp('13')
                     Ring = scaleRing;
@@ -129,7 +130,7 @@ for i = 1:length(directoryList(:,1))
                 disp('14')
                 if(isempty(Ring.DefaultThresh))
                     disp('15')
-                    [~, NumFoundWorms, ~, ~] = default_worm_threshold_level(sprintf('%s%s%s.avi',PathName, filesep, FilePrefix), background, [], target_numworms, Ring, 0);
+                    [~, NumFoundWorms, ~, ~] = default_worm_threshold_level(sprintf('%s.avi',PathName), background, [], target_numworms, Ring, 0);
                     save(ringfile, 'Ring');
                     
                     if(NumFoundWorms < Prefs.DefaultNumWormRange(1) || NumFoundWorms > Prefs.DefaultNumWormRange(2))
@@ -153,20 +154,20 @@ for i = 1:length(directoryList(:,1))
     directoryList(i,:) = filesep_convert(directoryList(i,:));
     PathName = deblank(directoryList(i,:));
 
-    dummystring = sprintf('%s%s*.avi',PathName,filesep);
+    dummystring = sprintf('%s.avi',PathName);
     movieList = dir(dummystring);
     
     for j=1:length(movieList)
         disp('18')
         [~, FilePrefix, ~] = fileparts(movieList(j).name);
-        background = calculate_background(sprintf('%s%s%s.avi',PathName, filesep, FilePrefix));
+        background = calculate_background(sprintf('%s.avi',PathName));
         
-        ringfile = sprintf('%s%s%s.Ring.mat',PathName, filesep, FilePrefix);
+        ringfile = sprintf('%s.Ring.mat',PathName);
         if(does_this_file_need_making(ringfile))
             disp('19')
             rm(ringfile);
             % manual intervention now permitted for finding ring
-            Ring = find_ring(background,sprintf('%s%s',PathName,filesep), FilePrefix, 1, quick);%%%
+            Ring = find_ring(background,sprintf('%s',PathName), '', 1, quick);%%%
             
             save(ringfile,'Ring');
             
@@ -190,20 +191,20 @@ for k=1:size(animal_find_dud_idx,1)
     directoryList(i,:) = filesep_convert(directoryList(i,:));
     PathName = deblank(directoryList(i,:));
 
-    dummystring = sprintf('%s%s*.avi',PathName,filesep);
+    dummystring = sprintf('%s.avi',PathName);
     movieList = dir(dummystring);
     
     fprintf('\n%s\n:',PathName)
     
     [~, FilePrefix, ~] = fileparts(movieList(j).name);
     
-    background = calculate_background(sprintf('%s%s%s.avi',PathName, filesep, FilePrefix));
+    background = calculate_background(sprintf('%s.avi',PathName));
     
-    Ring = find_ring(background,sprintf('%s%s',PathName,filesep), FilePrefix, 1, quick);%%%
+    Ring = find_ring(background,sprintf('%s',PathName), '', 1, quick);%%%
     
-    fprintf('%d %d %d %s%s%s.avi\n',i,j,Ring.NumWorms, PathName, filesep, FilePrefix)
+    fprintf('%d %d %d %s.avi\n',i,j,Ring.NumWorms, PathName)
     
-    ringfile = sprintf('%s%s%s.Ring.mat',PathName, filesep, FilePrefix);
+    ringfile = sprintf('%s.Ring.mat',PathName);
     save(ringfile,'Ring');
     
     clear('Ring');
@@ -219,51 +220,44 @@ end
 for i = 1:length(directoryList(:,1))
     disp('23')
     
+ls
     actually_processed_flag=0;
     
     % convert file paths automatically to the correct directory seperator
     directoryList(i,:) = filesep_convert(directoryList(i,:));
     
+    localpath = PathName;
     PathName = deblank(directoryList(i,:));
     
-    if(strcmp(PathName,'')==0)
-        localpath = PathName;
-        if(localpath(end)~=filesep)
-            localpath = sprintf('%s%s',PathName, filesep);
-        end
-    else
-        localpath = '';
-    end
     
-    
-    dummystring = sprintf('%s%s*.avi',PathName,filesep);
+    dummystring = sprintf('%s.avi',PathName);
     movieList = dir(dummystring);
     
     if(retrack_flag == 1)
         disp('24')
-        rmstr = sprintf('%s%s*procFrame.mat',PathName,filesep);
+        rmstr = sprintf('%s*procFrame.mat',PathName);
         rm(rmstr);
-        rmstr = sprintf('%s%s*Tracks.mat',PathName,filesep);
+        rmstr = sprintf('%s*Tracks.mat',PathName);
         rm(rmstr);
     end
     if(reanalyze_flag == 1)
         disp('25')
-        rmstr = sprintf('%s%s*.Tracks.mat',PathName,filesep);
+        rmstr = sprintf('%s.Tracks.mat',PathName);
         rm(rmstr);
-        rmstr = sprintf('%s%s*.BinData.mat',PathName,filesep);
+        rmstr = sprintf('%s.BinData.mat',PathName);
         rm(rmstr);
-        rmstr = sprintf('%s%s*.linkedTracks.mat',PathName,filesep);
+        rmstr = sprintf('%s.linkedTracks.mat',PathName);
         rm(rmstr);
-        rmstr = sprintf('%s%s*.collapseTracks.mat',PathName,filesep);
+        rmstr = sprintf('%s.collapseTracks.mat',PathName);
         rm(rmstr);
-        rmstr = sprintf('%s%s*.psth*',PathName,filesep);
+        rmstr = sprintf('%s.psth*',PathName);
         rm(rmstr);
     end
     if(reanalyze_flag == 2)
         disp('26')
-        rmstr = sprintf('%s%s*.BinData.mat',PathName,filesep);
+        rmstr = sprintf('%s.BinData.mat',PathName);
         rm(rmstr);
-        rmstr = sprintf('%s%s*.psth.BinData.mat',PathName,filesep);
+        rmstr = sprintf('%s.psth.BinData.mat',PathName);
         rm(rmstr);
     end
     
@@ -272,61 +266,63 @@ for i = 1:length(directoryList(:,1))
     et_index=0;
     for j=1:length(movieList)
         disp('27')
-        
+
+ls        
           [~, FilePrefix, ~] = fileparts(movieList(j).name);
         
-        working_file = sprintf('%s%s.working',localpath, FilePrefix);
-        
+        working_file = sprintf('%s.working',localpath);
+
+ls        
         if(file_existence(working_file) == 0 && ...
-                ( does_this_file_need_making(sprintf('%s%s.procFrame.mat',localpath, FilePrefix), Prefs.trackerbirthday) == 1 || ...
-                does_this_file_need_making(sprintf('%s%s.rawTracks.mat',localpath, FilePrefix), Prefs.trackerbirthday) == 1 || ...
-                does_this_file_need_making(sprintf('%s%s.Tracks.mat',localpath, FilePrefix), Prefs.track_analysis_date) == 1 || ...
-                does_this_file_need_making(sprintf('%s%s.linkedTracks.mat',localpath, FilePrefix), Prefs.track_analysis_date) == 1 || ...
-                does_this_file_need_making(sprintf('%s%s.collapseTracks.mat',localpath, FilePrefix), Prefs.track_analysis_date) == 1 ) )
+                ( does_this_file_need_making(sprintf('%s.procFrame.mat',localpath), Prefs.trackerbirthday) == 1 || ...
+                does_this_file_need_making(sprintf('%s.rawTracks.mat',localpath), Prefs.trackerbirthday) == 1 || ...
+                does_this_file_need_making(sprintf('%s.Tracks.mat',localpath), Prefs.track_analysis_date) == 1 || ...
+                does_this_file_need_making(sprintf('%s.linkedTracks.mat',localpath), Prefs.track_analysis_date) == 1 || ...
+                does_this_file_need_making(sprintf('%s.collapseTracks.mat',localpath), Prefs.track_analysis_date) == 1 ) )
             disp('28')
             
-            fprintf('\nprocessing %s%s.avi\n',localpath, FilePrefix)
+            fprintf('\nprocessing %s.avi\n',localpath)
             actually_processed_flag=1;
             tic
             
             % remove any processed files for this movie, in case they exist
-            fprintf('Removing old processed files for %s%s.avi\t%s\n',localpath,FilePrefix, timeString())
-            dummystring = sprintf('%s%s.Tracks.mat',localpath,FilePrefix);
+            fprintf('Removing old processed files for %s.avi\t%s\n',localpath, timeString())
+            dummystring = sprintf('%s.Tracks.mat',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s.linkedTracks.mat',localpath,FilePrefix);
+            dummystring = sprintf('%s.linkedTracks.mat',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s.collapseTracks.mat',localpath,FilePrefix);
+            dummystring = sprintf('%s.collapseTracks.mat',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s.BinData.mat',localpath,FilePrefix);
+            dummystring = sprintf('%s.BinData.mat',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s*.txt',localpath,FilePrefix);
+            dummystring = sprintf('%s*.txt',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s*.pdf',localpath,FilePrefix);
+            dummystring = sprintf('%s.*pdf',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s.psth_Tracks.mat',localpath,FilePrefix);
+            dummystring = sprintf('%s.psth_Tracks.mat',localpath);
             rm(dummystring);
-            dummystring = sprintf('%s%s.psth.BinData.mat',localpath,FilePrefix);
+            dummystring = sprintf('%s.psth.BinData.mat',localpath);
             rm(dummystring);
             
             
-            if(does_this_file_need_making(sprintf('%s%s.rawTracks.mat',localpath, FilePrefix), Prefs.trackerbirthday) == 1)
+            if(does_this_file_need_making(sprintf('%s.rawTracks.mat',localpath), Prefs.trackerbirthday) == 1)
                 disp('29')
-                dummystring = sprintf('%s%s.rawTracks.mat',localpath,FilePrefix);
+                dummystring = sprintf('%s.rawTracks.mat',localpath);
                 rm(dummystring);
             end
             
-            if(does_this_file_need_making(sprintf('%s%s.procFrame.mat',localpath, FilePrefix), Prefs.trackerbirthday) == 1)
+            if(does_this_file_need_making(sprintf('%s.procFrame.mat',localpath), Prefs.trackerbirthday) == 1)
                 disp('30')
-                dummystring = sprintf('%s%s.rawTracks.mat',localpath,FilePrefix);
+                dummystring = sprintf('%s.rawTracks.mat',localpath);
                 rm(dummystring);
-                dummystring = sprintf('%s%s.procFrame.mat',localpath,FilePrefix);
+                dummystring = sprintf('%s.procFrame.mat',localpath);
                 rm(dummystring);
             end
             
             fp = fopen(working_file,'w'); fclose(fp);
-            fprintf('\nLaunching patchTracker\n')
-            patchTracker(localpath,FilePrefix,stimulusIntervalFile,target_numworms,Prefs.FrameRate);
-            fprintf('\nFinished patchTracker\n')
+            fprintf('\nLaunching tracker\n')
+            tracker(localpath,stimulusIntervalFile,target_numworms,Prefs.FrameRate);
+            fprintf('\nFinished tracker\n')
             rm(working_file);
             
             
@@ -336,17 +332,17 @@ for i = 1:length(directoryList(:,1))
             disp('31')
             if(file_existence(working_file) == 1)
                 disp('32')
-                fprintf('\n%s%s.avi is being worked on\n',localpath, FilePrefix)
-            else if(does_this_file_need_making(sprintf('%s%s.rawTracks.mat',localpath, FilePrefix), Prefs.trackerbirthday) == 0) %#ok, readability warning
+                fprintf('\n%s%s.avi is being worked on\n',localpath)
+            else if(does_this_file_need_making(sprintf('%s%s.rawTracks.mat',localpath), Prefs.trackerbirthday) == 0) %#ok, readability warning
                     disp('33')
-                    fprintf('%s%s.avi has been processed\n',localpath, FilePrefix)
+                    fprintf('%s%s.avi has been processed\n',localpath)
                 end
             end
         end
         
-        if(file_existence(sprintf('%s%sstop.txt',pwd,filesep)))
+        if(file_existence(sprintf('%sstop.txt',pwd)))
             disp('34')
-            fprintf('\nstop due to %s%sstop.txt\n',pwd,filesep)
+            fprintf('\nstop due to %sstop.txt\n',pwd)
             cd(curr_dir);
             return;
         end
@@ -358,16 +354,16 @@ for i = 1:length(directoryList(:,1))
     while(j<=length(movieList))
         disp('36')
         
-        if(file_existence(sprintf('%s%sstop.txt',pwd,filesep)))
+        if(file_existence(sprintf('%sstop.txt',pwd)))
             disp('37')
-            fprintf('\nstop due to %s%sstop.txt\n',pwd,filesep)
+            fprintf('\nstop due to %sstop.txt\n',pwd)
             cd(curr_dir);
             return;
         end
         
           [~, FilePrefix, ~] = fileparts(movieList(j).name);
-        testfile = sprintf('%s%s%s.BinData.mat',PathName,filesep, FilePrefix);
-        working_file = sprintf('%s%s%s.working',PathName,filesep, FilePrefix);
+        testfile = sprintf('%s.BinData.mat',PathName);
+        working_file = sprintf('%s.working',PathName);
         if(file_existence(testfile)==0)  % this BinData file does not exist ... someone else is working on it, so let that process do the averaging
             analyse_flag=0;
             disp('38')
@@ -386,9 +382,9 @@ for i = 1:length(directoryList(:,1))
     end
     
     
-    if(file_existence(sprintf('%s%sstop.txt',pwd,filesep)))
+    if(file_existence(sprintf('%sstop.txt',pwd)))
         disp('44')
-        fprintf('\nstop due to %s%sstop.txt\n',pwd,filesep)
+        fprintf('\nstop due to %sstop.txt\n',pwd)
         cd(curr_dir);
         return;
     end
@@ -398,21 +394,21 @@ for i = 1:length(directoryList(:,1))
         if(trackonly_flag==0)
             disp('46')
             % if the averaged files don't exist, make them
-            if( does_this_file_need_making(sprintf('%s%s.avg.collapseTracks.mat',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1 || ...
-                    does_this_file_need_making(sprintf('%s%s.avg.BinData.mat',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1  || ...
-                    does_this_file_need_making(sprintf('%s%s.avg.BinData_array.mat',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1  || ...
-                    does_this_file_need_making(sprintf('%s%s.avg.freqs.txt',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1  || ...
-                    does_this_file_need_making(sprintf('%s%s.avg.non_freqs.txt',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1  || ...
-                    does_this_file_need_making(sprintf('%s%s.avg.pdf',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1 )
+            if( does_this_file_need_making(sprintf('%s.avg.collapseTracks.mat',localpath), Prefs.trackerbirthday) == 1 || ...
+                    does_this_file_need_making(sprintf('%s.avg.BinData.mat',localpath), Prefs.trackerbirthday) == 1  || ...
+                    does_this_file_need_making(sprintf('%s.avg.BinData_array.mat',localpath), Prefs.trackerbirthday) == 1  || ...
+                    does_this_file_need_making(sprintf('%s.avg.freqs.txt',localpath), Prefs.trackerbirthday) == 1  || ...
+                    does_this_file_need_making(sprintf('%s.avg.non_freqs.txt',localpath), Prefs.trackerbirthday) == 1  || ...
+                    does_this_file_need_making(sprintf('%s.avg.pdf',localpath), Prefs.trackerbirthday) == 1 )
                 disp('47')
                 actually_processed_flag=1;
             end
             
             if(~isempty(stimulusIntervalFile))
                 disp('48')
-                if( does_this_file_need_making(sprintf('%s%s.avg.psth.BinData.mat',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1 || ...
-                        does_this_file_need_making(sprintf('%s%s.avg.psth.pdf',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1  || ...
-                        does_this_file_need_making(sprintf('%s%s.avg.psth_Tracks.mat',localpath, prefix_from_path(PathName)), Prefs.trackerbirthday) == 1  )
+                if( does_this_file_need_making(sprintf('%s.avg.psth.BinData.mat',localpath), Prefs.trackerbirthday) == 1 || ...
+                        does_this_file_need_making(sprintf('%s.avg.psth.pdf',localpath), Prefs.trackerbirthday) == 1  || ...
+                        does_this_file_need_making(sprintf('%s.avg.psth_Tracks.mat',localpath), Prefs.trackerbirthday) == 1  )
                     actually_processed_flag=1;
                     disp('49')
                 end
