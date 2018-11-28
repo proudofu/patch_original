@@ -1,4 +1,4 @@
-% Master function, runs PatchTrackerAutomatedScript and then processPatchTracks.
+% Master function, runs PatchTrackerAutomatedScript to acquire .Tracks files and then processPatchTracks for .finalTracks files.
 
 % For either function, failure to execute will result in a description of the error while continuing to analyze other files.
 
@@ -20,13 +20,13 @@ for i=3:length(folders)
     cam = char(vids(i-2));
     cam = cam((length(cam)-3):end);
     measure = strcat('..\measure', cam, '.avi');
-    try
-        PatchTrackerAutomatedScript(vids{i-2}, 'quick', 'scale', char(measure), 'numworms', numworms, 'none'); %FOR SMALL PLATES
-    catch error
-        fprintf('\nThe following file failed PatchTrackerAutomatedScript: %s\n', vids{i-2});
-        fprintf('The stack: \n%s', getReport(error))
-    end
-end
+%     try
+%         PatchTrackerAutomatedScript(vids{i-2}, 'quick', 'scale', char(measure), 'numworms', numworms, 'none'); %FOR SMALL PLATES
+%     catch error
+%         fprintf('\nThe following file failed PatchTrackerAutomatedScript: %s\n', vids{i-2});
+%         fprintf('The stack: \n%s', getReport(error))
+%     end
+% end
 
 % Analyze tracks
 for i=1:length(vids)
