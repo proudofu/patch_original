@@ -1,16 +1,26 @@
 function start = recordEncounter(i, track, trackNum)
+disp('please')
 mlock
 persistent searchPath;
 persistent v;
 
+disp('please 2')
+
 if isempty(searchPath)
-    searchPath = 'F:\';%%%Change for right drive
+    searchPath = 'G:/behavior/'; % Change for right drive
 end
+
+disp('please 3')
+
 preTime = 20;
 endTime = 60;
-
-name = split(track.Name, '\');
-name = char(name(end));
+disp(track.Name)
+disp(split(track.Name, '/'))
+name = split(track.Name, '/');
+disp(name)
+disp(name{1})
+name = name{end};
+disp(name)
 picPrefix = split(name, '.');
 picPrefix = picPrefix{1}; 
 

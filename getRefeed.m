@@ -1,8 +1,10 @@
-function [allFinalTracks] = getAllCleanFinalRefeedTracks(nested) %filenames must be Date_Group_vid#.finalTracks.mat
-%nested is boolean indicating whether all mat files are in same folder or individual folders
-if nargin < 1
-    nested = false;
-end
+function [allFinalTracks] = getRefeed(date) %filenames must be Date_Group_vid#.finalTracks.mat
+%nested = true;
+
+
+% Turn off known warnings
+warning('off', 'images:initSize:adjustingMag') % Anticipate image resizing during user region selection
+warning('off', 'MATLAB:colon:nonIntegerIndex') % Known non-integer indeces in function writeVids
 
 allFinalTracks = struct();
 clean = {'Eccentricity'
@@ -24,7 +26,9 @@ clean = {'Eccentricity'
     'mvt_init'
     'stimulus_vector'};
 
-if nested
+cd(sprintf('G:/behavior/%s', date));
+
+%if nested
     folders = dir; %each video's files should be in own folder named date_genotype_vid#(_Cam#)...
     folders = folders([folders.isdir]);
     folders = folders(3:end);
@@ -57,7 +61,9 @@ if nested
         load(lawnFile(1).name);
         figure; hold on; title([fileName{1} fileName{3:4}]);
         
-           finalTracks = processRefeed(finalTracks, edge, lawn);
+        disp('1')
+        
+           finalTracks = processPatchRefeed(finalTracks, edge, lawn);
         if ~isempty(finalTracks) && length(fields(finalTracks))>0
            finalTracks = rmfield(finalTracks, clean);
             if (isfield(allFinalTracks,group))
@@ -69,47 +75,52 @@ if nested
         end
         cd ..
     end
-else
-    files = dir('*.finalTracks.mat'); %all finalTracks files should be in current directory
-    
-    for i=1:length(files)
-        fileName = strread(files(i).name,'%s','delimiter','.');
-        lawnFile = dir([fileName{1} '*.lawnFile.mat']);
-        if isempty(lawnFile)
-            edgeFile = dir([fileName{1} '*.edge.mat']);
-            if ~isempty(edgeFile)
-                load(edgeFile.name);
-            else
-                edge = [];
-            end
-            bgFile = dir([fileName{1} '*.background.mat']);
-            load(bgFile.name);
-            [edge, lawn] = findBorderManually(bkgnd, edge);
-            save([fileName{1} '.lawnFile.mat'], 'edge', 'lawn');
-        end
-    end
-            
-    for i=1:length (files)
-        vidName = strread(files(i).name,'%s','delimiter','_');
-        group = vidName{3}; 
-        load(files(i).name);
-        fileName = strread(files(i).name,'%s','delimiter','.');
-        lawnFile = dir([fileName{1} '*.lawnFile.mat']);
-        figure; hold on; title([vidName{1} vidName{3:4}]);
-        load(lawnFile(1).name);
-        finalTracks = processRefeed(finalTracks, edge, lawn);
-        if ~isempty(finalTracks) && length(fields(finalTracks))>0
-           finalTracks = rmfield(finalTracks, clean);
-           if (isfield(allFinalTracks,group))
-               oldFinalTracks = allFinalTracks.(group);
-               allFinalTracks.(group) = [oldFinalTracks finalTracks];
-           else
-               allFinalTracks.(group) = finalTracks;
-           end
-       end
-    end
-
-end
+% else
+%     files = dir('*.finalTracks.mat'); %all finalTracks files should be in current directory
+%     
+%     disp('2')
+%     
+%     for i=1:length(files)
+%         fileName = strread(files(i).name,'%s','delimiter','.');
+%         lawnFile = dir([fileName{1} '*.lawnFile.mat']);
+%         if isempty(lawnFile)
+%             edgeFile = dir([fileName{1} '*.edge.mat']);
+%             if ~isempty(edgeFile)
+%                 load(edgeFile.name);
+%             else
+%                 edge = [];
+%             end
+%             bgFile = dir([fileName{1} '*.background.mat']);
+%             load(bgFile.name);
+%             [edge, lawn] = findBorderManually(bkgnd, edge);
+%             save([fileName{1} '.lawnFile.mat'], 'edge', 'lawn');
+%         end
+%     end
+%             
+%     for i=1:length (files)
+%         vidName = strread(files(i).name,'%s','delimiter','_');
+%         group = vidName{3}; 
+%         load(files(i).name);
+%         fileName = strread(files(i).name,'%s','delimiter','.');
+%         lawnFile = dir([fileName{1} '*.lawnFile.mat']);
+%         figure; hold on; title([vidName{1} vidName{3:4}]);
+%         load(lawnFile(1).name);
+%         
+%         disp('3')
+%         
+%         finalTracks = processPatchRefeed(finalTracks, edge, lawn);
+%         if ~isempty(finalTracks) && length(fields(finalTracks))>0
+%            finalTracks = rmfield(finalTracks, clean);
+%            if (isfield(allFinalTracks,group))
+%                oldFinalTracks = allFinalTracks.(group);
+%                allFinalTracks.(group) = [oldFinalTracks finalTracks];
+%            else
+%                allFinalTracks.(group) = finalTracks;
+%            end
+%        end
+%     end
+% 
+% end
 
 strains = fields(allFinalTracks);
 N2s = contains(strains,'N2');
@@ -123,13 +134,15 @@ name = split(names{1}, '\');
 name = split(name(end), '_');
 name = name{1};
 
-while exist(sprintf('uncheckedTracks_%s_%i.mat', name, num), 'file')
+% while exist(sprintf('uncheckedTracks_%s_%i.mat', name, num), 'file')
+while exist(sprintf('uncheckedTracks_%s.mat', name, num), 'file')
     num = num + 1;
 end
 
-eval(sprintf('tracks_%s = allFinalTracks', name))
-eval(sprintf('save(''uncheckedTracks_%s_%i.mat'', ''tracks_%s'')', name, num, name));
-
+%eval(sprintf('tracks_%s = allFinalTracks', name))
+tracks = allFinalTracks;
+%eval(sprintf('save(''uncheckedTracks_%s_%i.mat'', ''tracks_%s'')', name, num, name));
+save(sprintf('uncheckedTracks_%s.mat', date), tracks);
 return
 
 end

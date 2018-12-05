@@ -1,4 +1,7 @@
 function patchTracks = processRefeed(finalTracks, edge, lawn)%bkgrnd can also be passed as edge to expedite process and find lawn anew
+
+disp('good')
+
 buffer = 4;
 if nargin < 3
     [edge, lawn] = findBorderManually (edge);
@@ -88,7 +91,8 @@ for t=1:length(finalTracks)
            i = checkEncounter(i, finalTracks(t), trackNum, [x(1) y(1)]);%MANUAL CHECK HERE$$$
        else
            if exist(sprintf('encounterVids\\%s.mat', finalTracks(t).ID), 'file') < 1
-                recordEncounter(i, finalTracks(t), trackNum);
+               disp('good2')
+                recordPatchEncounter(i, finalTracks(t), trackNum);
            end
        end
        trackNum = trackNum + 1;

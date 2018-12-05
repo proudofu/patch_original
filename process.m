@@ -8,7 +8,7 @@
 function process(folder,subfolder) % date is a char array in format YYYYMMDD corresponding to the day of recording
 
 % default parameters: range of worms expected on the plate and size of plate
-numworms = [10 100];
+numworms = [10 200];
 
 %cd (sprintf('/om/user/kmaher/data/patch_videos/%s', date))
 %folders = dir; %avi should be in own folder named date_genotype_vid#_Cam#

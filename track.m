@@ -61,8 +61,6 @@ while(doneflag == 0)
                 [~, FilePrefix, ~] = fileparts(movieList(j).name);
                 ringfile = sprintf('%s.Ring.mat',PathName);
                 working_file = sprintf('%s.Ring.working',PathName);
-ls
-                
                 if(does_this_file_need_making(ringfile))
                     doneflag = 0;
                     disp('4')
@@ -72,7 +70,6 @@ ls
                         fp = fopen(working_file,'w'); fclose(fp);
                         fprintf('\nBeginning\t%s\n', timeString())
                         moviefile = sprintf('%s.avi',PathName);
-                        
                             ring(PathName, moviefile, scaleRing);
                     end
                 else
@@ -80,7 +77,6 @@ ls
                         disp('6')
                         clear('Ring');
                         rm(working_file);
-ls
                     end
                 end
             end
