@@ -205,5 +205,3 @@ function playCommand(src, event)
         end
     end
 end
-
-% add Close request function 

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-/om/user/kmaher/scripts/matlab/Patch/split $1
-/om/user/kmaher/scripts/matlab/Patch/process $1
+/om/user/kmaher/scripts/matlab/patch/split $1
+/om/user/kmaher/scripts/matlab/patch/process $1
