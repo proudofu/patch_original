@@ -2,7 +2,13 @@ function checkEncounters(date)
 memBuffer = 0.25;% out of 1
 
 cd(sprintf('G:/behavior/%s', date));
+
+%%%%% DELET
+%tracks = 
 load(sprintf('G:/behavior/%s/uncheckedTracks_%s', date, date)); %#ok Load tracks file into workspace from HDD
+
+%%%%% DELET
+%tracks = tracks.tracks;
 
 strains = fields(tracks); %#ok, the tracks variable is a generic name for all uncheckedTracks files 
 maxMem = memory;
