@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/om/user/kmaher/scripts/matlab/patch/process $1

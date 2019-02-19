@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#SBATCH --job-name=test
+#SBATCH --output=/om/user/kmaher/log/test_%j.txt
+
+sleep 20
+echo "great job"

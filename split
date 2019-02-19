@@ -3,7 +3,7 @@
 # Distributed splitting
 mkdir /om/user/kmaher/data/patch_videos/$1_unsplit
 for subfolder in /om/user/kmaher/data/patch_videos/$1/*; do
-	sbatch subsplit $1 $(basename $subfolder)
+	sbatch /om/user/kmaher/scripts/matlab/patch/subsplit $1 $(basename $subfolder)
 done
 sleep 5h
 

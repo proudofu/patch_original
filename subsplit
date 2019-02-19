@@ -1,5 +1,5 @@
 #!/bin/bash
-#BATCH --job-name=subsplit
+#SBATCH --job-name=subsplit
 #SBATCH --output=/om/user/kmaher/log/subsplit_%j.txt
 #SBATCH -N 1
 #SBATCH --ntasks=1
