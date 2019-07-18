@@ -142,7 +142,7 @@ end
 %eval(sprintf('tracks_%s = allFinalTracks', name))
 tracks = allFinalTracks;
 %eval(sprintf('save(''uncheckedTracks_%s_%i.mat'', ''tracks_%s'')', name, num, name));
-save(sprintf('uncheckedTracks_%s.mat', date), tracks);
+save(sprintf('uncheckedTracks_%s.mat', date), 'tracks');
 return
 
 end

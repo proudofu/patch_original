@@ -1,4 +1,3 @@
-
 function start = recordPatchEncounter(i, track, trackNum)
 
 % Turn off known warnings
@@ -150,4 +149,3 @@ function vidFile = getVidFile(name, track, varargin)
     vidFile = strcat(file.folder, '\', file.name);
     return
 end
-

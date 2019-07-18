@@ -1,4 +1,4 @@
-function patchPlot(date, varargin)
+function patchPlotAngSpeed(date, varargin)
 % date: date the experiment was performed
 % NOTE: Hard coded to plot only 6 conditions
 
@@ -8,7 +8,7 @@ p = inputParser;
 % Default vals
 mins              = 8; % number of mins on either side of patch encounter one wishes to view
 window            = 5; % number of seconds for width of sliding window avg to smooth graph in last step.
-lowerBound        = 0; % Only display worms that encountered AFTER this time wrt start of recording (sec)
+lowerBound        = 0; % Only display worms that encountered AFTER this time (sec)
 upperBound        = 1800; % Only display worms that encountered BEFORE this time (sec)
 replicate         = [1 2]; % Default both replicates; choose double vals 1 or 2 for a single replicate
 tracks            = tracks.tracks; % tracks is saved with an extra nested layer so need to go one layer in
@@ -42,13 +42,13 @@ if length(replicate) < 2
 end
 tracks = thresholdTracks(tracks, lowerBound, upperBound);
 figure
-title('Speed at Patch Encounter', 'Color', 'k')
-ylabel('Speed', 'Color', 'k')
-xlabel('Time', 'Color', 'k')
-lineColors = {[0 0 0], [.5 .5 .5], [.8 .25 .8], [.2 .7 .2], [.25 .3 1], [1 .5 .05]}; % List of line colors to be used in order
-patchColors = {[0 0 0], [.5 .5 .5], [.8 .25 .8], [.4 1 .4], [.25 .3 1], [1 .5 .05]};
-patchAlphas = [.6 .4 .4 .4 .4 .5];
-edgeColors = {[.3 .3 .3], [.7 .7 .7], [.9 .6 .9], [.3 .9 .3], [.4 .6 1], [1 .7 .2]};
+title( 'Angular Speed at Patch Encounter', 'Color', 'k')
+ylabel('Angular Speed',                    'Color', 'k')
+xlabel('Time',                             'Color', 'k')
+lineColors = { [0 0 0], [.5 .5 .5], [.8 .25 .8], [.2 .7 .2], [.25 .3 1], [1 .5 .05]}; % List of line colors to be used in order
+patchColors = {[0 0 0], [.5 .5 .5], [.8 .25 .8], [.4  1 .4], [.25 .3 1], [1 .5 .05]};
+patchAlphas =  [.6 .4 .4 .4 .4 .5];
+edgeColors = { [.3 .3 .3], [.7 .7 .7], [.9 .6 .9], [.3 .9 .3], [.4 .6 1], [1 .7 .2]};
 lines = ['-' '-' '-' '-' '-' '-']; % List of line styles to be used in order
 lgnd = cell(length(conditions),1);
 mainlines = [];
@@ -68,23 +68,23 @@ for condition = conditions
         worm = worms(w);
         ri = worm.refeedIndex;
         % 1. Fill in speed at refeedIndex in the middle column (i.e. fill in time zero)
-        speedMatrix(w, mi) = worm.Speed(ri);
+        speedMatrix(w, mi) = worm.AngSpeed(ri);
         % 2. Move to the left filling in speeds only where a frame was recorded (i.e. skip a slot if time skipped too)
         i = 1;
         while i < min(ri, mi)
-            speedMatrix(w,mi - i) = worm.Speed(ri - i);
+            speedMatrix(w,mi - i) = worm.AngSpeed(ri - i);
             i = i + 1;
         end
         % 3. Move to the right and do the same thing.
         i = 1;
-        while i < min(length(worm.Speed) - ri, mi)
-            speedMatrix(w, mi + i) = worm.Speed(ri + i);
+        while i < min(length(worm.AngSpeed) - ri, mi)
+            speedMatrix(w, mi + i) = worm.AngSpeed(ri + i);
             i = i + 1;
         end
     end
     
-    % Trim to desired frame for plot
-    speedMatrix = speedMatrix(:, mi-mins*60*3:mi+mins*60*3);
+    % Trim to desired frame for plot and get abs val
+    speedMatrix = abs(speedMatrix(:, mi-mins*60*3:mi+mins*60*3));
     
     % Averaging across worms within the condition
     avgspeed = nanmean(speedMatrix);

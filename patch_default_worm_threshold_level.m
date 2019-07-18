@@ -2,7 +2,7 @@
 % if there is a ring, look at the num_worm distribution, flag outliers, and
 % recalc best threshold w/o them 
 
-function [DefaultLevel, NumFoundWorms, meanWormSize, Ring] = default_worm_threshold_level(MovieName, background, procFrame, target_numworms, Ring, manual_flag, obj_penalty_coeff)
+function [DefaultLevel, NumFoundWorms, meanWormSize, Ring] = patch_default_worm_threshold_level(MovieName, background, procFrame, target_numworms, Ring, manual_flag, obj_penalty_coeff)
 
 global Prefs;
 

@@ -1,4 +1,3 @@
-
 function patchTracks = processPatchRefeed(finalTracks, edge, lawn)%bkgrnd can also be passed as edge to expedite process and find lawn anew
 buffer = 4;
 if nargin < 3
